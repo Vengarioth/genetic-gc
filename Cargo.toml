@@ -1,7 +1,12 @@
 [package]
 name = "genetic-gc"
+description = "a garbage collector powered by machine learning"
 version = "0.1.0"
 authors = ["Andreas Fischer <home@deviru.de>"]
+repository = "https://github.com/vengarioth/genetic-gc"
+readme = "readme.md"
+keywords = ["gc", "garbage collection", "machine learning"]
+license = "MIT"
 
 [dependencies]
 libc = "0.2"
