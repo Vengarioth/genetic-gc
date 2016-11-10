@@ -1,0 +1,7 @@
+[package]
+name = "genetic-gc"
+version = "0.1.0"
+authors = ["Andreas Fischer <home@deviru.de>"]
+
+[dependencies]
+libc = "0.2"
