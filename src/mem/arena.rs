@@ -39,27 +39,41 @@ pub struct Arena {
 }
 
 impl Arena {
-    pub fn allocate() -> Result<Arena, memutil::MemoryError> {
+    pub fn new() -> Result<Arena, memutil::MemoryError> {
         // TODO huge waste of memory, choose proper alignment
         let result = memutil::allocate_aligned(ArenaSize, ArenaSize);
         // TODO handle error
         let (actual_address, address) = result.unwrap();
 
-        return Ok(Arena::new(actual_address, address));
-    }
-
-    fn new(actual_address: usize, address: usize) -> Arena {
-        return Arena {
+        return Ok(Arena {
             actual_address: actual_address,
             address: address
-        };
+        });
+    }
+
+    pub fn get_arena_address_from_object_address(address: usize) -> usize {
+        return address & !(ArenaCellMask);
+    }
+
+    pub fn get_arena_address(&self) -> usize {
+        return self.address;
     }
 
     pub fn initialize(&self) {
-        let word: Word = !0;
+        let block_word: Word = 0;
+        let mark_word: Word = !0;
         for i in MinBlockWord..MaxBlockWord {
-            self.set_mark_word(i, word);
+            self.set_block_word(i, block_word);
+            self.set_mark_word(i, mark_word);
         }
+    }
+
+    pub fn get_first_cell(&self) -> CellId {
+        return MinCellId;
+    }
+
+    pub fn get_last_cell(&self) -> CellId {
+        return MaxCellId;
     }
 
     pub fn set_cell_state(&self, cell: CellId, state: BlockType) -> Option<()> {
@@ -125,12 +139,12 @@ impl Arena {
         }
     }
 
-    pub fn allocate_bump(&self, size: usize) -> Option<CellId> {
+    pub fn allocate_bump(&self, size: usize) -> Option<usize> {
         // TODO implement
         return None;
     }
 
-    pub fn allocate_fit(&self, size: usize) -> Option<CellId> {
+    pub fn allocate_fit(&self, size: usize) -> Option<usize> {
         println!("");
 
         let cells = self.get_cells_needed_to_store(size);
@@ -164,7 +178,7 @@ impl Arena {
             self.set_cell_state(start + i, BlockType::Extend);
         }
 
-        return Some(start);
+        return Some(self.get_address(start));
     }
 
     pub fn get_cell_id(&self, address: usize) -> CellId {
@@ -222,7 +236,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let arena = Arena::allocate().unwrap();
+        let arena = Arena::new().unwrap();
         arena.initialize();
 
         let addr = arena.get_address(6);
@@ -235,13 +249,25 @@ mod tests {
 
     #[test]
     fn it_allocates_space() {
-        let arena = Arena::allocate().unwrap();
+        let arena = Arena::new().unwrap();
         arena.initialize();
 
         let address = arena.allocate_fit(44).unwrap();
         let id = arena.get_cell_id(address);
 
         assert!(id > 0);
+
+        arena.free();
+    }
+
+    #[test]
+    fn it_is_referencable_by_addresses() {
+        let arena = Arena::new().unwrap();
+        arena.initialize();
+
+        let address = arena.allocate_fit(44).unwrap();
+
+        assert_eq!(Arena::get_arena_address_from_object_address(address), arena.get_arena_address());
 
         arena.free();
     }
