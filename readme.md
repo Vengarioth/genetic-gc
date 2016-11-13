@@ -1,7 +1,7 @@
 # genetic-gc
 _a machine learning approach to garbage collection_
 
-> To unleash machine learning onto a garbage collector, one has to write a garbage collector first.
+[![Build Status](https://travis-ci.org/Vengarioth/genetic-gc.svg?branch=master)](https://travis-ci.org/Vengarioth/genetic-gc)
 
 ## State of the GC
 1. make it work __✓__
