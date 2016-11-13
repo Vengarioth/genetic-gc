@@ -84,20 +84,20 @@ impl<T> GC<T> where T : GCTypeInformation {
 
     fn sweep(&self) {
         for (_, arena) in &self.arena_map {
-            for cellId in arena.get_first_cell()..arena.get_last_cell() {
-                let mut clear = false;
-                match arena.get_cell_state(cellId).unwrap() {
+            let mut clear = false;
+            for cell_id in arena.get_first_cell()..arena.get_last_cell() {
+                match arena.get_cell_state(cell_id).unwrap() {
                     BlockType::Black => {
-                        arena.set_cell_state(cellId, BlockType::White);
+                        arena.set_cell_state(cell_id, BlockType::White);
                         clear = false;
                     }
                     BlockType::White => {
-                        arena.set_cell_state(cellId, BlockType::Free);
+                        arena.set_cell_state(cell_id, BlockType::Free);
                         clear = true;
                     }
                     BlockType::Extend => {
                         if clear {
-                            arena.set_cell_state(cellId, BlockType::Free);
+                            arena.set_cell_state(cell_id, BlockType::Free);
                         }
                     }
                     BlockType::Free => {
