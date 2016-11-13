@@ -15,7 +15,7 @@ _a machine learning approach to garbage collection_
 
 ## API
 ```rust
-  // TypeInformation and TestStruct omitted
+// TypeInformation and TestStruct omitted
 let type_information = TypeInformation{};
 let mut gc = GC::new(type_information);
 let size = std::mem::size_of::<TestStruct>();
